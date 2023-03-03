@@ -54,15 +54,15 @@ function putStoriesOnPage() {
 //update name to something with create story and edit doctring
 /** Gets data from submit form and put story on page*/
 
-async function getFormDataAndCreateStory(evt){
+async function getFormDataAndCreateStory(evt) {
   evt.preventDefault();
 
   const author = $("#create-author").val();
   const title = $("#create-title").val();
-  const url = $("#create-url").val(); 
+  const url = $("#create-url").val();
 
   const user = currentUser;
-  const storyInput = {title, author, url};
+  const storyInput = { title, author, url };
 
   const story = await storyList.addStory(user, storyInput);
 
@@ -75,4 +75,14 @@ async function getFormDataAndCreateStory(evt){
 
 $submitForm.on("submit", getFormDataAndCreateStory);
 
+function putFavoritesListOnPage() {
+  $favoriteList.empty();
 
+  // loop through all of our stories and generate HTML for them
+  for (let favorite of currentUser.favorites) {
+    const $favorite = generateStoryMarkup(favorite);
+    $favoriteList.append($favorite);
+  }
+
+  $favoriteList.show();
+}

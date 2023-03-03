@@ -11,6 +11,7 @@ function navAllStories(evt) {
   evt.preventDefault();
   hidePageComponents();
   putStoriesOnPage();
+  $favoriteList.hide();
 }
 
 $body.on("click", "#nav-all", navAllStories);
@@ -23,6 +24,7 @@ function navLoginClick(evt) {
   hidePageComponents();
   $loginForm.show();
   $signupForm.show();
+  $favoriteList.hide();
 }
 
 $navLogin.on("click", navLoginClick);
@@ -38,11 +40,22 @@ function updateNavOnLogin() {
 }
 
 /** When a user clicks on the submit in nav bar, show new story form */
-function navSubmitFormOnClick(evt){
+function navSubmitFormOnClick(evt) {
   console.log("hello");
   evt.preventDefault();
   hidePageComponents();
   $submitForm.show();
+  $favoriteList.hide();
 }
 
 $navSubmit.on("click", navSubmitFormOnClick);
+
+/** When a user clicks on the submit in nav bar, show new story form */
+function navFavoritesOnClick(evt) {
+  evt.preventDefault();
+  hidePageComponents();
+  $favoriteList.show();
+  putFavoritesListOnPage();
+}
+
+$navFavoriteStories.on("click", navFavoritesOnClick);
