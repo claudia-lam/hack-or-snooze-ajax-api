@@ -65,12 +65,11 @@ class StoryList {
 
   /** Adds story data to API, makes a Story instance, adds it to story list.
    * - user - the current instance of User who will post the story
-   * - obj newStory of {title, author, url} 
+   * - obj newStory of {title, author, url}
    *
    * Returns the new Story instance
    */
   async addStory(user, newStory) {
-
     const userToken = user.loginToken;
 
     const storyData = {
@@ -78,9 +77,9 @@ class StoryList {
       author: newStory.author,
       url: newStory.url,
     };
-    
+
     const response = await axios.post(`${BASE_URL}/stories`, {
-      token: userToken, 
+      token: userToken,
       story: storyData,
     });
 
@@ -88,7 +87,6 @@ class StoryList {
     this.stories.unshift(storyInstance);
 
     return storyInstance;
-
   }
 }
 
@@ -201,5 +199,36 @@ class User {
       console.error("loginViaStoredCredentials failed", err);
       return null;
     }
+  }
+
+  async addFavorite(story) {
+    const token = this.loginToken;
+
+    const response = await axios.post(
+      `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      { token }
+    );
+    console.log("response", response);
+    this.favorites.unshift(story);
+  }
+
+  async deleteFavorite(story) {
+    const token = this.loginToken;
+    console.log("storyID", story.storyId);
+    console.log("username", this.username);
+    console.log("token", this.loginToken);
+    const url = `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`;
+    console.log(url);
+
+    const response = await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: "DELETE",
+      data: { token },
+    });
+    console.log("response", response);
+    this.favorites = this.favorites.filter((favoriteStory) => {
+      favoriteStory.storyId !== story.storyId;
+    });
+    console.log("new favorites", this.favorites);
   }
 }
