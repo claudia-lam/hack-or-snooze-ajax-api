@@ -50,3 +50,29 @@ function putStoriesOnPage() {
 
   $allStoriesList.show();
 }
+
+//update name to something with create story and edit doctring
+/** Gets data from submit form and put story on page*/
+
+async function getFormDataAndCreateStory(evt){
+  evt.preventDefault();
+
+  const author = $("#create-author").val();
+  const title = $("#create-title").val();
+  const url = $("#create-url").val(); 
+
+  const user = currentUser;
+  const storyInput = {title, author, url};
+
+  const story = await storyList.addStory(user, storyInput);
+
+  //pass story to function and prepend to allstorieslist
+  const $story = generateStoryMarkup(story);
+  $allStoriesList.prepend($story);
+  $submitForm.hide();
+  $allStoriesList.show();
+}
+
+$submitForm.on("submit", getFormDataAndCreateStory);
+
+

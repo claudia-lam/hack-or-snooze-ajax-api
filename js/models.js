@@ -23,8 +23,7 @@ class Story {
   /** Parses hostname out of URL and returns it. */
 
   getHostName() {
-    // UNIMPLEMENTED: complete this function!
-    return "hostname.com";
+    return this.url;
   }
 }
 
@@ -66,21 +65,30 @@ class StoryList {
 
   /** Adds story data to API, makes a Story instance, adds it to story list.
    * - user - the current instance of User who will post the story
-   * - obj of {title, author, url}
+   * - obj newStory of {title, author, url} 
    *
    * Returns the new Story instance
    */
-
   async addStory(user, newStory) {
+
     const userToken = user.loginToken;
+
     const storyData = {
       title: newStory.title,
       author: newStory.author,
       url: newStory.url,
     };
+    
     const response = await axios.post(`${BASE_URL}/stories`, {
-      params: { userToken, storyData },
+      token: userToken, 
+      story: storyData,
     });
+
+    const storyInstance = new Story(response.data.story);
+    this.stories.unshift(storyInstance);
+
+    return storyInstance;
+
   }
 }
 
