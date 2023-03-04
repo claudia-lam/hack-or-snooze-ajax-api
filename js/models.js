@@ -21,6 +21,7 @@ class Story {
   }
 
   /** Parses hostname out of URL and returns it. */
+  //todo: return hostname not url
 
   getHostName() {
     return this.url;
@@ -200,7 +201,10 @@ class User {
       return null;
     }
   }
-
+  //alter doctring 
+  /**  takes in story object, requests story data from storyId 
+  * and adds to currentUser's favorites 
+  */
   async addFavorite(story) {
     const token = this.loginToken;
 
@@ -209,16 +213,15 @@ class User {
       { token }
     );
     console.log("response", response);
+
     this.favorites.unshift(story);
   }
-
+  /** takes in story object, deletes story data
+   *  and removes from currentUser's favorites
+   * */ 
   async deleteFavorite(story) {
     const token = this.loginToken;
-    console.log("storyID", story.storyId);
-    console.log("username", this.username);
-    console.log("token", this.loginToken);
     const url = `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`;
-    console.log(url);
 
     const response = await axios({
       url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
@@ -226,9 +229,10 @@ class User {
       data: { token },
     });
     console.log("response", response);
+    //this is creating copy of array- would be better to either both mutate or both copy
     this.favorites = this.favorites.filter((favoriteStory) => {
-      favoriteStory.storyId !== story.storyId;
+      return favoriteStory.storyId !== story.storyId;
     });
-    console.log("new favorites", this.favorites);
   }
+
 }

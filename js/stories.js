@@ -20,11 +20,14 @@ async function getAndShowStoriesOnStart() {
  */
 
 function generateStoryMarkup(story) {
-  // console.debug("generateStoryMarkup", story);
-
   const hostName = story.getHostName();
+  const star = getStar(story);
+//todo: if there is no currentUser, add 28-30 to get star
   return $(`
       <li id="${story.storyId}">
+        <span class="star">
+          <i class="bi ${star}"></i>
+        </span>
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
@@ -33,6 +36,19 @@ function generateStoryMarkup(story) {
         <small class="story-user">posted by ${story.username}</small>
       </li>
     `);
+}
+
+/**checks if storyId is in currentUser's favorites 
+ * returns bootstrap string element
+ */
+function getStar(story){
+
+  if(currentUser.favorites.some((favStory)=>favStory.storyId == story.storyId)){
+    return "bi-star-fill";
+  }
+  else{
+    return "bi-star";
+  }
 }
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
@@ -74,7 +90,9 @@ async function getFormDataAndCreateStory(evt) {
 }
 
 $submitForm.on("submit", getFormDataAndCreateStory);
-
+/** gets list of currentUser's favorites,
+ * generates html stories and puts on page
+*/
 function putFavoritesListOnPage() {
   $favoriteList.empty();
 
@@ -86,3 +104,30 @@ function putFavoritesListOnPage() {
 
   $favoriteList.show();
 }
+/** lets user favorite and unfavorite story
+ * requests storyId and creates new Story object
+ * adds or removes new Story object 
+ */
+async function toggleStoryFavorite(evt) {
+  //todo: closest instead of parent
+  const $starParent = $(evt.target).parent().parent();
+  const storyId = $starParent.attr("id");
+
+  const storyResponse = await axios.get(`${BASE_URL}/stories/${storyId}`);
+
+  const story = new Story(storyResponse.data.story);
+
+  //user favorites as "source of truth" rather than html element - use favorite list
+  if ($(evt.target).hasClass("bi-star-fill")) {
+     await currentUser.deleteFavorite(story);
+    $(evt.target).removeClass("bi-star-fill").addClass("bi-star");
+  }
+  else {
+    $(evt.target).removeClass("bi-star").addClass("bi-star-fill");
+    await currentUser.addFavorite(story);
+  }
+
+}
+
+$body.on("click", ".star", toggleStoryFavorite);
+
